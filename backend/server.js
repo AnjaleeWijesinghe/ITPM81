@@ -1,12 +1,12 @@
 const express =require ("express");
+const mongoose =require("mongoose");
 const bodyParser = require("body-parser");
 const cors =require("cors");
 const dotenv = require("dotenv");
 
 const app = express();
 
-require('dotenv').config();
-const mongoose = require('mongoose')
+require("dotenv").config();
 
 app.use(cors());
 app.use(express.json());
@@ -18,7 +18,7 @@ app.get("/",(req,res, next)=>{
   next();
 })
 
-const URL =process.env.MONGO_URL;
+const URL =process.env.MONGODB_URL;
 
 mongoose.connect(URL, {
   useNewUrlParser: true

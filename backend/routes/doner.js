@@ -1,90 +1,80 @@
-const router = require("express").Router();
-let donor = require("../models/donerModel");
+const router =require("express").Router();
+let doner = require('../models/donerModel');
 
-//http//localhost:8080/doner/add
+router.route("/add").post((req,res)=>{
 
-router.route("/add").post((req, res) => {
-    
-    const name= req.body.name;
-    const contactnumber = Number(req.body.age);
+    const name =req.body.name;
+    const contactnumber = req.body.contactnumber;
     const address = req.body.address;
-    const totaldonations = Number(req.body.totaldonations);
-    const memberid = Number(req.body.memberid);
+    const totaldonations = req.body.totaldonations;
+    const memberid = req.body.memberid;
 
-
-const newDonor = new donor({
-
-    name,
-    contactnumber,
-    address,
-    totaldonations,
-    memberid
-
-
-})
-
-newDonor.save().then(() => {
-    res.json("Donor Added")
-}).catch((err) => {
-    console.log(err);
-})
-
-});
-
-http://localhost:8080/doner/
-router.route("/").get((req, res) => {
-    donor.find().then((donors) => {
-        res.json(donors);
-    }).catch((err) => {
-        console.log(err);
-    })
-})
-
-//http://localhost:8080/doner/update/60f0b0b0c8b0c71f0c0b0b0b
-
-router.route("/update/:id").put(async (req, res) => {
-
-    let userId = req.params.id;
-    const {name, contactnumber, address, totaldonations, memberid} = req.body;
-
-    const updateDonor = {
-
+    const newDoner = new doner({
         name,
         contactnumber,
         address,
         totaldonations,
         memberid
+    })
 
+    newDoner.save().then(()=>{
+        res.json("Doner added")
+    }).catch((err)=>{
+        console.log(err);
+    })
+})
+
+router.route("/").get((req,res)=>{
+    doner.find().then((doners)=>{
+        res.json(doners)
+    }).catch((err)=>{
+        console.log(err);
+    })
+
+})
+
+router.route("/update/:id").put(async (req, res) =>{
+    let donerId = req.params.id;
+    const{name,contactnumber,address,totaldonations,memberid} = req.body;
+
+    const updatedoner ={
+        name,
+        contactnumber,
+        address,
+        totaldonations,
+        memberid
     }
-    const update = await donor.findByIdAndUpdate(userId, updateDonor).then(() => {
-        res.status(200).send({status: "User Updated"})
-    }).catch((err) => {
+
+    const update = await doner.findByIdAndUpdate(donerId, updatedoner)
+    .then(() =>{
+        res.status(200).send({staus: "doner updated"})
+    }).catch((err) =>{
         console.log(err);
-        res.status(500).send({status: "Error with updating data", error: err.message});
+        res.status(500).send({staus: "Error with updated data",error: err.mesege});
     })
-});
+})
 
+    router.route("/delete/:id").delete(async (req,res) =>{
+        let donerId = req.params.id;
 
-router.route("/delete/:id").delete(async (req, res) => {
-    let userId = req.params.id;
+        await doner.findByIdAndDelete(donerId)
+        .then(()=>{
+            res.status(200).send({staus: "donor deleted"})
+        }).catch((err) =>{
+            console.log(err);
+            res.status(500).send({staus: "Error with deleted data",error: err.mesege});
+        })
+})
 
-    await donor.findByIdAndDelete(userId).then(() => {
-        res.status(200).send({status: "User Deleted"});
-    }).catch((err) => {
-        console.log(err);
-        res.status(500).send({status: "Error with deleting data", error: err.message});
+    router.route("/get/:id").get(async (req,res) => {
+        let donerId = req.params.id;
+        const user = await doner.findById(donerId)
+        .then((doner)=>{
+            res.status(200).send({staus: "user fetched",doner})
+        }).catch((err) =>{
+            console.log(err);
+            res.status(500).send({staus: "Error with get user",error: err.mesege});
+        })
     })
-});
-
-router.route("/get/:id").get(async (req, res) => {
-    let userId = req.params.id;
-    await donor.findById(userId).then((donor) => {
-        res.status(200).send({status: "User fetched", donor});
-    }).catch((err) => {
-        console.log(err.message);
-        res.status(500).send({status: "Error with get user", error: err.message});
-    })  
-});
-
 
 module.exports = router;
